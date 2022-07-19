@@ -5,6 +5,8 @@ import { Company } from '../company.model';
 import { CompanyProjectService } from '../companyProject.service';
 import { Project } from '../project.model';
 import { Task } from '../task.model';
+import { Record } from '../record.model';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-project-form',
@@ -19,8 +21,10 @@ import { Task } from '../task.model';
   companiesSubscription: Subscription;
   projectsSubscription: Subscription;
   tasksSubscription: Subscription;
+  projectId: string;
+  taskId: string;
 
-   constructor(private comProServic: CompanyProjectService) { }
+   constructor(private comProServic: CompanyProjectService, private db:AngularFirestore) { }
 
    ngOnInit() {
     this.companiesSubscription = this.comProServic.companiesChanged
@@ -37,13 +41,36 @@ import { Task } from '../task.model';
 
   }
 
-  onAddNewRecord(form: NgForm){
-   this.comProServic.addDataToDatabase(form.value.record)
-  }
+
 
 onSelectCompany(form: NgForm){
 this.comProServic.selectCompanies(form.value.company);
 }
+
+// onComposeNewRecord(form: NgForm){
+//   this.projectId = (this.comProServic.selectProjects(form.value.project)).id;
+//   this.taskId = (this.comProServic.selectTasks(form.value.task)).id;
+//   let data ={
+//     projectId: this.projectId,
+//     taskId: this.taskId,
+//     hour: form.value.hour
+//   }
+//   return data;
+// }
+
+onAddNewRecord(form: NgForm){
+  this.projectId = (this.comProServic.selectProjects(form.value.project)).id;
+  this.taskId = (this.comProServic.selectTasks(form.value.task)).id;
+  let data ={
+    projectId: this.projectId,
+    taskId: this.taskId,
+    hour: form.value.hour
+  }
+  console.log("*****************************************")
+  console.log(data)
+  this.db.collection('record').add(data);
+ }
+
 
 onSelectProject(form: NgForm){
   this.comProServic.selectProjects(form.value.project);

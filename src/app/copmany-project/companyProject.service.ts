@@ -85,6 +85,7 @@ selectProjects(selectedId: string) {
     this.selectedProject = <Project>this.availableProjects.find(
         ex => ex.id === selectedId);
     this.projectChanged.next({ ...this.selectedProject});
+    return this.selectedProject;
 }
     //////////////////////////////////////////////////////
    
@@ -111,6 +112,7 @@ selectProjects(selectedId: string) {
         this.selectedTask = <Task>this.availableTasks.find(
             ex => ex.id === selectedId);
         this.taskChanged.next({ ...this.selectedTask});
+        return this.selectedTask;
     }
 
 //     completeExercise() {
@@ -145,5 +147,9 @@ selectProjects(selectedId: string) {
 
      addDataToDatabase (newRecord: Record ) {
         this.db.collection('record').add(newRecord);
+    }
+
+    deleteRecord(recordId:string){
+        // this.db.collection('record').doc.apply.
     }
  }
