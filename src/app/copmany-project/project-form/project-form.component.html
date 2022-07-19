@@ -1,0 +1,42 @@
+<section class="CopProTasCard" fxLayoutAlign="center" >
+    <form (ngSubmit)="onSelectCompany(f)" #f="ngForm">
+      <mat-card fxFlex.md="100%" fxFlex="900px">
+      <mat-card-title fxLayoutAlign="center"></mat-card-title>
+      <mat-card-content fxLayoutAlign="center">
+          <mat-form-field appearance="fill">
+            <mat-select placeholder="Choose company" ngModel name="company" required>
+              <mat-option *ngFor="let company of companies" [value]="company.id">
+                {{company.name}}
+              </mat-option>
+            </mat-select> 
+            <mat-label><mat-icon>business</mat-icon> <i>Company name</i></mat-label>
+          </mat-form-field>
+          
+          <mat-form-field appearance="fill">
+            <mat-select placeholder="Choose Project" ngModel name="project" required>
+              <mat-option *ngFor="let project of projects" [value]="project.id">
+                {{project.name}}
+              </mat-option>
+            </mat-select> 
+            <mat-label><mat-icon>engineering</mat-icon> <i>Project name</i></mat-label>
+          </mat-form-field>
+         
+          <mat-form-field appearance="fill" >
+            <mat-select placeholder="Choose Task" ngModel name="task" required>
+              <mat-option *ngFor="let task of tasks" [value]="task.id">
+                {{task.name}}
+              </mat-option>
+          </mat-select>   
+          <mat-label><mat-icon>add_task</mat-icon> <i>Task name</i></mat-label>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label><mat-icon>schedule</mat-icon> <i>Estimated time(By hour)</i></mat-label>
+            <input matInput type="number">
+            </mat-form-field>
+      </mat-card-content> 
+      <mat-card-actions fxLayoutAlign="center">
+        <button type="submit" mat-raised-button color="accent" [disabled]="f.invalid">Save</button>
+    </mat-card-actions>
+      </mat-card>
+    </form>  
+  </section>
