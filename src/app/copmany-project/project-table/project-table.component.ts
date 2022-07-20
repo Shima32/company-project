@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort , Sort} from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { combineLatest, Subscription,of, Observable, from } from 'rxjs';
 import { Company } from '../company.model';
@@ -13,20 +13,19 @@ import { switchMap, map } from 'rxjs/operators';
 import {uniq} from 'lodash';
 
 
-
 @Component({
   selector: 'app-project-table',
   templateUrl: './project-table.component.html',
   styleUrls: ['./project-table.component.css']
 })
-export class ProjectTableComponent implements OnInit {
+export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
   displayedColumns = ['companyName', 'projectName', 'taskName', 'estimatedTime', 'action'];
   companyDataSource = new MatTableDataSource<Company>();
   projectDataSource = new MatTableDataSource<Project>();
   private companiesSubscription: Subscription;
   private projectsSubscription: Subscription;
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort,{static: false}) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   companies: Company[];
   projects: Project[];
@@ -53,8 +52,7 @@ export class ProjectTableComponent implements OnInit {
     this.companiesSubscription = this.comProServic.companiesChanged
     .subscribe((companies: Company[]) => {
       this.companies = companies;
-      console.log('COMPANY:', this.companies)
-    })
+    });
 
     // this.projectsSubscription = this.comProServic.projectsChanged
     // .subscribe((projects: Project[]) => {
@@ -72,7 +70,7 @@ export class ProjectTableComponent implements OnInit {
 
     //     return  combineLatest([
     //       of(projects),
-             
+            
     //       combineLatest(
     //       companyIds.map(companyId =>
     //        this.db.collection<any>('company', ref => ref.where('id', '==', companyId))
@@ -160,94 +158,80 @@ export class ProjectTableComponent implements OnInit {
     /////////////// record + task + project + company
     this.db
     .collection<Record>('record')
-    .valueChanges()
+    .snapshotChanges()
     .pipe(
       switchMap( records =>{
-        const taskIds = uniq(records.map(rec => rec.taskId));
-        const projectIds = uniq(records.map(rec => rec.projectId));
+        const taskIds = uniq(records.map(rec => rec.payload.doc.data().taskId));
+        const projectIds = uniq(records.map(rec => rec.payload.doc.data().projectId));
         const companyIds = uniq ( this.companies.map(com => com.id))
- 
-        console.log(projectIds);
-        console.log(taskIds);
-        console.log('COMPANY IDs:',companyIds);
 
         return  combineLatest(
           [
             of(records),  
 
             combineLatest(
-             taskIds.map(taskId =>
-             this.db.collection<Task>('task', ref => ref.where('id', '==', taskId))
-             .valueChanges().pipe(
-               map(tasks => tasks[0]
-                 )
-             )
-             )
-         ),
-         combineLatest( 
-           projectIds.map(projectId =>
-           this.db.collection<Project>('project', ref => ref.where('id', '==', projectId))
-           .valueChanges().pipe(
-             map(projects => projects[0])
-           )
-           )
-      
-       ),
+            taskIds.map(taskId =>
+            this.db.collection<Task>('task', ref => ref.where('id', '==', taskId))
+            .valueChanges().pipe(
+              map(tasks => tasks[0] )
+              )
+            )
+        ),
 
-       combineLatest(
+        combineLatest( 
+          projectIds.map(projectId =>
+          this.db.collection<Project>('project', ref => ref.where('id', '==', projectId))
+          .valueChanges().pipe(
+            map(projects => projects[0])
+           )
+          )
+      ),
+
+      combineLatest(
         companyIds.map(companyId =>
           this.db.collection<Company>('company', ref => ref.where('id', '==', companyId))
           .valueChanges().pipe(
             map(companies => companies[0])
-          )
-          
-          )
-       )
-       ,
- 
-
-          ]
-        
-       )
+          )))]
+      )
       }),
 
       map(([records,tasks,projects]) =>{
-        console.log(records);
         return records.map(record => {
           return {
-            ...record,
-            task: tasks.find( t =>t.id === record.taskId),
-            project: projects.find( p =>p.id === record.projectId),
-            company: this.companies.find(c => c.id === (projects.find( p =>p.id === record.projectId)).companyId)
-            
+            hour: record.payload.doc.data().hour,
+            id: record.payload.doc.id,
+            task: tasks.find( t =>t.id === record.payload.doc.data().taskId).name,
+            project: projects.find( p =>p.id === record.payload.doc.data().projectId).name,
+            company: this.companies.find(c => c.id === (projects.find( p =>p.id === record.payload.doc.data().projectId)).companyId).name
           }
         }) 
-      }
-      )
-      
-    ).subscribe(data => {
+      } ))
+      .subscribe(data => {
       this.dataSource.data = data;
       console.log(data);
-    })
-
-    
-    }
+    }) 
+  }
 ///////////////////////////////end of ngOnInit
-
+onDeleteRecord(recId: string){
+  if(confirm("Are you sure to delete this record?")){
+    this.db.doc('record/'+ recId).delete();
+  }
+}
 
 ngAfterViewInit(){
-  this.dataSource.sort = this.sort;
   this.dataSource.paginator = this.paginator; 
+  this.dataSource.sort = this.sort;
 }
+
 doFilter(filterValue: string){
 this.dataSource.filter =filterValue.trim().toLowerCase();
 }
 
 ngOnDestroy() {
   this.companiesSubscription.unsubscribe();
-  this.projectsSubscription.unsubscribe();
+}
 }
 
-}
 
 

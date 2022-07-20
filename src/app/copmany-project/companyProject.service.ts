@@ -79,7 +79,7 @@ fetchAvailableTasks() {
     this.db
    .collection('task')
     .snapshotChanges()
-    .pipe(map(docArray => {
+    .pipe(map(docArray => { 
     return docArray.map(doc => {
         return {
         id: doc.payload.doc.id,
@@ -118,6 +118,8 @@ selectProjects(selectedId: string) {
         this.taskChanged.next({ ...this.selectedTask});
         return this.selectedTask;
     }
+
+
 /// it does not work
     // innerJoinCollection(firstCollection: string, secondCollection: string){
 
@@ -190,11 +192,6 @@ selectProjects(selectedId: string) {
      addDataToDatabase (newRecord: Record ) {
         this.db.collection('record').add(newRecord);
     }
-
-    deleteRecord(recordId:string){
-        // this.db.collection('record').doc.apply.
-    }
-
 
     fetchAvailableDta(collectionName: string) {
         this.db
