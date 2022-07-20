@@ -4,7 +4,7 @@
         <input matInput type="text" (keyup)="doFilter($event.target.value)" placeholder="Filter">
     </mat-form-field>
 </div>
-<mat-table [dataSource]="dataSource"  matSort>
+<!-- <mat-table [dataSource]="dataSource"  matSort>
     <ng-container matColumnDef="companyName">
         <mat-header-cell  gdAlignRows="center" *matHeaderCellDef>Company Name</mat-header-cell>
         <mat-cell  gdAlignRows="center" *matCellDef="let element">{{element.company}}</mat-cell>
@@ -34,8 +34,43 @@
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-</mat-table>
+</mat-table > -->
 
+<!-- <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[1, 5, 10, 20]">
+</mat-paginator> -->
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort >
+
+    <ng-container matColumnDef="companyName">
+        <mat-header-cell  gdAlignRows="center" *matHeaderCellDef>Company Name</mat-header-cell>
+        <mat-cell  gdAlignRows="center" *matCellDef="let element">{{element.company}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="projectName">
+        <mat-header-cell gdAlignRows="center" *matHeaderCellDef>Project Name</mat-header-cell>
+        <mat-cell gdAlignRows="center" *matCellDef="let element">{{element.project}}</mat-cell>
+    </ng-container> 
+
+    <ng-container matColumnDef="taskName">
+        <mat-header-cell gdAlignRows="center" *matHeaderCellDef>Task Name</mat-header-cell>
+        <mat-cell  gdAlignRows="center" *matCellDef="let element">{{element.task}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="estimatedTime" >
+        <mat-header-cell gdAlignRows="center" *matHeaderCellDef mat-sort-header="hour">Estimated Time</mat-header-cell>
+        <mat-cell gdAlignRows="center" *matCellDef="let element">{{element.hour}}</mat-cell>
+    </ng-container>
+    
+    <ng-container matColumnDef="action" >
+        <mat-header-cell gdAlignRows="center" *matHeaderCellDef>Action</mat-header-cell>
+        <mat-cell gdAlignRows="center" *matCellDef="let element">
+            <button mat-raised-button color="warn" (click)="onDeleteRecord(element.id)">Delete</button>
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</table>
 <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[1, 5, 10, 20]">
 </mat-paginator>
 
