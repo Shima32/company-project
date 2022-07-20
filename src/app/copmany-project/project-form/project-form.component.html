@@ -4,7 +4,7 @@
       <mat-card-title fxLayoutAlign="center"></mat-card-title>
       <mat-card-content fxLayoutAlign="center">
           <mat-form-field appearance="fill">
-            <mat-select placeholder="Choose company" ngModel name="company" required ngModel #company (valueChange)="checkCompanyDropdown(company.value)">
+            <mat-select placeholder="Choose company" name="company" required ngModel #company (valueChange)="checkCompanyDropdown(company.value)">
               <mat-option *ngFor="let company of companies" [value]="company.id">
                 {{company.name}}
               </mat-option>

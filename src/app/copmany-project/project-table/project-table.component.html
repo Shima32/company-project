@@ -4,7 +4,7 @@
         <input matInput type="text" (keyup)="doFilter($event.target.value)" placeholder="Filter">
     </mat-form-field>
 </div>
-<mat-table [dataSource]="dataSource" matSort>
+<mat-table [dataSource]="dataSource" matSort ngModel>
     <ng-container matColumnDef="companyName">
         <mat-header-cell  gdAlignRows="center" *matHeaderCellDef>Company Name</mat-header-cell>
         <mat-cell  gdAlignRows="center" *matCellDef="let element">{{element.company.name}}</mat-cell>
@@ -12,17 +12,17 @@
 
     <ng-container matColumnDef="projectName">
         <mat-header-cell gdAlignRows="center" *matHeaderCellDef>Project Name</mat-header-cell>
-        <mat-cell gdAlignRows="center" *matCellDef="let element">{{element.name}}</mat-cell>
+        <mat-cell gdAlignRows="center" *matCellDef="let element">{{element.project.name}}</mat-cell>
     </ng-container> 
 
     <ng-container matColumnDef="taskName">
         <mat-header-cell gdAlignRows="center" *matHeaderCellDef>Task Name</mat-header-cell>
-        <mat-cell  gdAlignRows="center" *matCellDef="let element"></mat-cell>
+        <mat-cell  gdAlignRows="center" *matCellDef="let element">{{element.task.name}}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="estimatedTime" >
         <mat-header-cell gdAlignRows="center" *matHeaderCellDef mat-sort-header>Estimated Time</mat-header-cell>
-        <mat-cell gdAlignRows="center" *matCellDef="let element"></mat-cell>
+        <mat-cell gdAlignRows="center" *matCellDef="let element">{{element.hour}}</mat-cell>
     </ng-container>
     
     <ng-container matColumnDef="action" >

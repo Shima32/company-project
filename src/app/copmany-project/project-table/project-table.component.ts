@@ -50,11 +50,11 @@ export class ProjectTableComponent implements OnInit {
 
   ngOnInit() {
     //------------------------
-    // this.companiesSubscription = this.comProServic.companiesChanged
-    // .subscribe((companies: Company[]) => {
-    //   this.companyDataSource.data = companies;
-    //   console.log(companies)
-    // })
+    this.companiesSubscription = this.comProServic.companiesChanged
+    .subscribe((companies: Company[]) => {
+      this.companies = companies;
+      console.log('COMPANY:', this.companies)
+    })
 
     // this.projectsSubscription = this.comProServic.projectsChanged
     // .subscribe((projects: Project[]) => {
@@ -62,44 +62,44 @@ export class ProjectTableComponent implements OnInit {
     //   console.log(projects)
     // })
     ///////////////////connect project and company
-    this.db
-    .collection<any>('project')
-    .valueChanges()
-    .pipe(
-      switchMap( projects =>{
-        const companyIds = uniq(projects.map(pro => pro.companyId));
-        console.log(companyIds)
+    // this.db
+    // .collection<any>('project')
+    // .valueChanges()
+    // .pipe(
+    //   switchMap( projects =>{
+    //     const companyIds = uniq(projects.map(pro => pro.companyId));
+    //     console.log(companyIds)
 
-        return  combineLatest([
-          of(projects),
+    //     return  combineLatest([
+    //       of(projects),
              
-          combineLatest(
-          companyIds.map(companyId =>
-           this.db.collection<any>('company', ref => ref.where('id', '==', companyId))
-           .valueChanges().pipe(
-             map(companies => companies[0]
-               )
-           )
-           )
-       )
-        ])
-      }),
-      map(([projects, companies]) =>{
-        return projects.map(project => {
-          return {
-            ...project,
-            company: companies.find( a =>a.id === project.companyId)
-          }
-        })
-      }
+    //       combineLatest(
+    //       companyIds.map(companyId =>
+    //        this.db.collection<any>('company', ref => ref.where('id', '==', companyId))
+    //        .valueChanges().pipe(
+    //          map(companies => companies[0]
+    //            )
+    //        )
+    //        )
+    //    )
+    //     ])
+    //   }), 
+    //   map(([projects, companies]) =>{
+    //     return projects.map(project => {
+    //       return {
+    //         ...project,
+    //         company: companies.find( a =>a.id === project.companyId)
+    //       }
+    //     })
+    //   }
 
-      )
+    //   )
       
-    )
-    .subscribe(data => {
-      this.dataSource.data = data;
-      console.log(data);
-    })
+    // )
+    // .subscribe(data => {
+    //   this.dataSource.data = data;
+    //   console.log(data);
+    // })
 /// ---------------- record + task + project
     // this.db
     // .collection<Record>('record')
@@ -112,27 +112,31 @@ export class ProjectTableComponent implements OnInit {
     //     console.log(taskIds);
 
     //     return  combineLatest(
-    //           of(records),  
+    //       [
+    //         of(records),  
 
-    //          combineLatest(
-    //           taskIds.map(taskId =>
-    //           this.db.collection<Task>('task', ref => ref.where('id', '==', taskId))
-    //           .valueChanges().pipe(
-    //             map(tasks => tasks[0]
-    //               )
-    //           )
-    //           )
-    //       ),
+    //         combineLatest(
+    //          taskIds.map(taskId =>
+    //          this.db.collection<Task>('task', ref => ref.where('id', '==', taskId))
+    //          .valueChanges().pipe(
+    //            map(tasks => tasks[0]
+    //              )
+    //          )
+    //          )
+    //      ),
 
-    //       combineLatest( 
-    //         projectIds.map(projectId =>
-    //         this.db.collection<Project>('project', ref => ref.where('id', '==', projectId))
-    //         .valueChanges().pipe(
-    //           map(projects => projects[0]
-    //             )
-    //         )
-    //         )
-    //     )
+    //      combineLatest( 
+    //        projectIds.map(projectId =>
+    //        this.db.collection<Project>('project', ref => ref.where('id', '==', projectId))
+    //        .valueChanges().pipe(
+    //          map(projects => projects[0]
+    //            )
+    //        )
+    //        )
+    //    )
+
+    //       ]
+        
     //    )
     //   }),
 
@@ -152,6 +156,79 @@ export class ProjectTableComponent implements OnInit {
     //   this.dataSource.data = data;
     //   console.log(data);
     // })
+
+    /////////////// record + task + project + company
+    this.db
+    .collection<Record>('record')
+    .valueChanges()
+    .pipe(
+      switchMap( records =>{
+        const taskIds = uniq(records.map(rec => rec.taskId));
+        const projectIds = uniq(records.map(rec => rec.projectId));
+        const companyIds = uniq ( this.companies.map(com => com.id))
+ 
+        console.log(projectIds);
+        console.log(taskIds);
+        console.log('COMPANY IDs:',companyIds);
+
+        return  combineLatest(
+          [
+            of(records),  
+
+            combineLatest(
+             taskIds.map(taskId =>
+             this.db.collection<Task>('task', ref => ref.where('id', '==', taskId))
+             .valueChanges().pipe(
+               map(tasks => tasks[0]
+                 )
+             )
+             )
+         ),
+         combineLatest( 
+           projectIds.map(projectId =>
+           this.db.collection<Project>('project', ref => ref.where('id', '==', projectId))
+           .valueChanges().pipe(
+             map(projects => projects[0])
+           )
+           )
+      
+       ),
+
+       combineLatest(
+        companyIds.map(companyId =>
+          this.db.collection<Company>('company', ref => ref.where('id', '==', companyId))
+          .valueChanges().pipe(
+            map(companies => companies[0])
+          )
+          
+          )
+       )
+       ,
+ 
+
+          ]
+        
+       )
+      }),
+
+      map(([records,tasks,projects]) =>{
+        console.log(records);
+        return records.map(record => {
+          return {
+            ...record,
+            task: tasks.find( t =>t.id === record.taskId),
+            project: projects.find( p =>p.id === record.projectId),
+            company: this.companies.find(c => c.id === (projects.find( p =>p.id === record.projectId)).companyId)
+            
+          }
+        }) 
+      }
+      )
+      
+    ).subscribe(data => {
+      this.dataSource.data = data;
+      console.log(data);
+    })
 
     
     }
