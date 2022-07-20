@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Company } from '../company.model';
@@ -14,7 +14,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
   styleUrls: ['./project-form.component.css']
 })
  export class ProjectFormComponent implements OnInit {
-
+  @ViewChild('f') form: NgForm;
   companies: Company[];
   projects: Project[];
   tasks: Task[];
@@ -23,10 +23,17 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
   tasksSubscription: Subscription;
   projectId: string;
   taskId: string;
+  data: any;
+  selectedCompany: string = "--Choose Company--";
+  selectedCompanyProjects: Array<string>;
+  selectedProjectTasks: Array<string>;
+  comprojects = [];
+  proTasks = [];
 
    constructor(private comProServic: CompanyProjectService, private db:AngularFirestore) { }
 
    ngOnInit() {
+
     this.companiesSubscription = this.comProServic.companiesChanged
     .subscribe(companies => ( this.companies = companies))
     this.comProServic.fetchAvailableCompanies();
@@ -41,22 +48,33 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 
   }
 
+  checkCompanyDropdown($event:any){
+    this.comprojects = this.projects.filter(p => p.companyId === $event)
+    let pItem=this.comprojects[0];
+    this.form.controls['project'].setValue('');
+    this.form.controls['project'].setValue(pItem.id);
+    console.log($event) //company ID
+    console.log(pItem.id) //project ID
+ 
+    
+    this.proTasks = this.tasks.filter(t => t.projectId === pItem.id)
+    let tItem=this.proTasks[0];
+    this.form.controls['task'].setValue('');
+    this.form.controls['task'].setValue(tItem.id);
+    console.log(tItem.id) //task ID
 
+  }
+
+  checkProjectDropdown($event:any){
+    this.proTasks = this.tasks.filter(t => t.projectId === $event)
+    let item=this.proTasks[0];
+    this.form.controls['task'].setValue(item.id);
+    console.log($event)
+  }
 
 onSelectCompany(form: NgForm){
 this.comProServic.selectCompanies(form.value.company);
 }
-
-// onComposeNewRecord(form: NgForm){
-//   this.projectId = (this.comProServic.selectProjects(form.value.project)).id;
-//   this.taskId = (this.comProServic.selectTasks(form.value.task)).id;
-//   let data ={
-//     projectId: this.projectId,
-//     taskId: this.taskId,
-//     hour: form.value.hour
-//   }
-//   return data;
-// }
 
 onAddNewRecord(form: NgForm){
   this.projectId = (this.comProServic.selectProjects(form.value.project)).id;
@@ -66,7 +84,6 @@ onAddNewRecord(form: NgForm){
     taskId: this.taskId,
     hour: form.value.hour
   }
-  console.log("*****************************************")
   console.log(data)
   this.db.collection('record').add(data);
  }

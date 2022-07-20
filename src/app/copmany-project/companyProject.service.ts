@@ -1,8 +1,10 @@
 import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/compat/firestore";
+
 import { Data } from "@angular/router";
-import { combineLatest, Subject } from "rxjs";
-import { map } from "rxjs/operators";
+import { combineLatest, of, Subject } from "rxjs";
+import { switchMap, map } from "rxjs/operators";
+import {uniq} from 'lodash';
 
 import { Company } from "./company.model";
 import { Project} from "./project.model";
@@ -32,6 +34,8 @@ export class CompanyProjectService {
     private selectedTask: Task;
 
 
+    availableData: any[]=[];
+    dataChanged =  new Subject;
     
      constructor(private db:AngularFirestore){}
 
@@ -53,15 +57,6 @@ export class CompanyProjectService {
         })
     }
 
-    selectCompanies(selectedId: string) {
-
-        this.selectedCompany = <Company>this.availableCompanies.find(
-            ex => ex.id === selectedId);
-        this.companyChanged.next({ ...this.selectedCompany});
-    }
-
-////////////////////////////////////////////////////////
-
 fetchAvailableProjects() {
     this.db
    .collection('project')
@@ -80,6 +75,33 @@ fetchAvailableProjects() {
     })
 }
 
+fetchAvailableTasks() {
+    this.db
+   .collection('task')
+    .snapshotChanges()
+    .pipe(map(docArray => {
+    return docArray.map(doc => {
+        return {
+        id: doc.payload.doc.id,
+        ...doc.payload.doc.data() as Task
+        };
+    })
+    }))
+    .subscribe((projects: Task[]) => {
+        this.availableTasks = projects;
+        this.tasksChanged.next([...this.availableTasks])
+    })
+}
+
+
+
+selectCompanies(selectedId: string) {
+
+    this.selectedCompany = <Company>this.availableCompanies.find(
+        ex => ex.id === selectedId);
+    this.companyChanged.next({ ...this.selectedCompany});
+}
+
 selectProjects(selectedId: string) {
 
     this.selectedProject = <Project>this.availableProjects.find(
@@ -87,26 +109,8 @@ selectProjects(selectedId: string) {
     this.projectChanged.next({ ...this.selectedProject});
     return this.selectedProject;
 }
-    //////////////////////////////////////////////////////
    
-    fetchAvailableTasks() {
-        this.db
-       .collection('task')
-        .snapshotChanges()
-        .pipe(map(docArray => {
-        return docArray.map(doc => {
-            return {
-            id: doc.payload.doc.id,
-            ...doc.payload.doc.data() as Task
-            };
-        })
-        }))
-        .subscribe((projects: Task[]) => {
-            this.availableTasks = projects;
-            this.tasksChanged.next([...this.availableTasks])
-        })
-    }
-
+    
     selectTasks(selectedId: string) {
 
         this.selectedTask = <Task>this.availableTasks.find(
@@ -114,6 +118,44 @@ selectProjects(selectedId: string) {
         this.taskChanged.next({ ...this.selectedTask});
         return this.selectedTask;
     }
+/// it does not work
+    // innerJoinCollection(firstCollection: string, secondCollection: string){
+
+    //    return (this.db
+    //     .collection<any>(firstCollection)
+    //     .valueChanges()
+    //     .pipe(
+    //       switchMap( projects =>{
+    //         const companyIds = uniq(projects.map(pro => pro.companyId));
+    //         console.log(companyIds)
+    
+    //         return  combineLatest([
+    //           of(projects),
+                 
+    //           combineLatest(
+    //           companyIds.map(companyId =>
+    //            this.db.collection<any>(secondCollection, ref => ref.where('id', '==', companyId))
+    //            .valueChanges().pipe(
+    //              map(companies => companies[0]
+    //                )
+    //            )
+    //            )
+    //        )
+    //         ])
+    //       }),
+    //       map(([projects, companies]) =>{
+    //         return projects.map(project => {
+    //           return {
+    //             ...project,
+    //             company: companies.find( a =>a.id === project.companyId)
+    //           }
+    //         })
+    //       }
+    
+    //       )
+          
+    //     ))
+    // }
 
 //     completeExercise() {
 //         this.addDataToDatabase({...this.runningExercise,
@@ -138,12 +180,12 @@ selectProjects(selectedId: string) {
 //         return { ...this.runningExercise };
 //     }
 
-    fetchCompletedOrCancelledExercises() {
-        this.db.collection('company').valueChanges()
-        .subscribe((companies: Company[]) => {
-            this.finishedExercisesChanged.next(companies);
-        })
-    }
+    // fetchCompletedOrCancelledExercises() {
+    //     this.db.collection('company').valueChanges()
+    //     .subscribe((companies: Company[]) => {
+    //         this.finishedExercisesChanged.next(companies);
+    //     })
+    // }
 
      addDataToDatabase (newRecord: Record ) {
         this.db.collection('record').add(newRecord);
@@ -152,4 +194,24 @@ selectProjects(selectedId: string) {
     deleteRecord(recordId:string){
         // this.db.collection('record').doc.apply.
     }
+
+
+    fetchAvailableDta(collectionName: string) {
+        this.db
+       .collection(collectionName)
+        .snapshotChanges()
+        .pipe(map(docArray => {
+        return docArray.map(doc => {
+            return {
+            id: doc.payload.doc.id,
+            ...doc.payload.doc.data() as any
+            };
+        })
+        }))
+        .subscribe((companies: Company[]) => {
+            this.availableData = companies;
+            this.companiesChanged.next([...this.availableData])
+        })
+    }
+
  }

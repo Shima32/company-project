@@ -63,7 +63,7 @@ export class ProjectTableComponent implements OnInit {
     // })
     ///////////////////connect project and company
     this.db
-    .collection<Project>('project')
+    .collection<any>('project')
     .valueChanges()
     .pipe(
       switchMap( projects =>{
@@ -75,7 +75,7 @@ export class ProjectTableComponent implements OnInit {
              
           combineLatest(
           companyIds.map(companyId =>
-           this.db.collection<Company>('company', ref => ref.where('id', '==', companyId))
+           this.db.collection<any>('company', ref => ref.where('id', '==', companyId))
            .valueChanges().pipe(
              map(companies => companies[0]
                )
@@ -95,7 +95,8 @@ export class ProjectTableComponent implements OnInit {
 
       )
       
-    ).subscribe(data => {
+    )
+    .subscribe(data => {
       this.dataSource.data = data;
       console.log(data);
     })
@@ -151,6 +152,8 @@ export class ProjectTableComponent implements OnInit {
     //   this.dataSource.data = data;
     //   console.log(data);
     // })
+
+    
     }
 ///////////////////////////////end of ngOnInit
 
