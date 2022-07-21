@@ -11,6 +11,7 @@ import { CompanyProjectService } from '../companyProject.service';
 import { Project } from '../project.model';
 import { switchMap, map } from 'rxjs/operators';
 import {uniq} from 'lodash';
+import { UIService } from 'src/app/shared/ui.service';
 
 
 @Component({
@@ -19,11 +20,14 @@ import {uniq} from 'lodash';
   styleUrls: ['./project-table.component.css']
 })
 export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
+  constructor(private comProServic: CompanyProjectService, private db:AngularFirestore, private uiService: UIService) { }
   displayedColumns = ['companyName', 'projectName', 'taskName', 'estimatedTime', 'action'];
   companyDataSource = new MatTableDataSource<Company>();
   projectDataSource = new MatTableDataSource<Project>();
+  isLoading = false;
   private companiesSubscription: Subscription;
   private dataSubscription: Subscription;
+  private loadingSubscription: Subscription
 
   @ViewChild(MatSort,{static: false}) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -45,10 +49,15 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
 
   ////////////////////////////////////////
 
-  constructor(private comProServic: CompanyProjectService, private db:AngularFirestore) { }
+
 
   ngOnInit() {
 
+    this.loadingSubscription = this.uiService.loadingStateChanged.subscribe(
+      isLoading => {
+        this.isLoading = isLoading;
+      }
+    );
     
     this.companiesSubscription = this.comProServic.companiesChanged
     .subscribe((companies: Company[]) => {
@@ -157,6 +166,7 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
     // })
 
     /////////////// record + task + project + company
+  this.uiService.loadingStateChanged.next(true);
    this.dataSubscription = (this.db
     .collection<Record>('record')
     .snapshotChanges()
@@ -209,6 +219,7 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
         }) 
       } ))
       .subscribe(data => {
+      this.uiService.loadingStateChanged.next(false);
       this.dataSource.data = data;
       console.log(data);
     })) 
@@ -230,8 +241,16 @@ this.dataSource.filter =filterValue.trim().toLowerCase();
 }
 
 ngOnDestroy() {
-  this.companiesSubscription.unsubscribe();
-  this.dataSubscription.unsubscribe();
+
+  if(this.companiesSubscription){
+    this.companiesSubscription.unsubscribe();
+  }
+  if(this.dataSubscription){
+    this.dataSubscription.unsubscribe();
+  }
+  if (this.loadingSubscription) {
+    this.loadingSubscription.unsubscribe();
+  }
 }
 }
 

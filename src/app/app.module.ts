@@ -24,6 +24,7 @@ import { CompanyProjectService } from './copmany-project/companyProject.service'
 import { AngularFireModule } from "@angular/fire/compat";
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { UIService } from './shared/ui.service';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,7 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
     AngularFirestoreModule,
     AngularFireAuthModule 
   ],
-  providers: [AuthService,CompanyProjectService],
+  providers: [AuthService,CompanyProjectService,UIService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

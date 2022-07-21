@@ -11,6 +11,7 @@ import { Company } from "./company.model";
 import { Project} from "./project.model";
 import {Task} from "./task.model"
 import {Record} from "./record.model"
+import { UIService } from "../shared/ui.service";
  
 @Injectable()
 
@@ -40,7 +41,7 @@ export class CompanyProjectService {
     availableData: any[]=[];
     dataChanged =  new Subject;
     
-     constructor(private db:AngularFirestore){}
+     constructor(private db:AngularFirestore, private uiService: UIService){}
 
     fetchAvailableCompanies() {
         this.fbSubs.push(this.db
