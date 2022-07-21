@@ -14,7 +14,7 @@
             
             <mat-form-field appearance="fill">
               <mat-select placeholder="Choose Project" name="project" required  ngModel #project (valueChange)="checkProjectDropdown(project.value)">
-                <mat-option *ngFor="let project of projects" [value]="project.id">
+                <mat-option *ngFor="let project of comprojects" [value]="project.id">
                         {{project.name}}
                 </mat-option>
               </mat-select> 
@@ -23,7 +23,7 @@
           
             <mat-form-field appearance="fill" >
               <mat-select placeholder="Choose Task"  name="task" required ngModel #task>
-                <mat-option *ngFor="let task of tasks" [value]="task.id">
+                <mat-option *ngFor="let task of proTasks" [value]="task.id">
                   {{task.name}}
                 </mat-option>
             </mat-select>   

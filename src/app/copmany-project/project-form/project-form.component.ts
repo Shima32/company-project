@@ -26,8 +26,8 @@
     selectedCompany: string = "--Choose Company--";
     selectedCompanyProjects: Array<string>;
     selectedProjectTasks: Array<string>;
-    comprojects = [];
-    proTasks = [];
+    comprojects: Project[];
+    proTasks: Task[];
 
     constructor(private comProServic: CompanyProjectService, private db:AngularFirestore) { }
 

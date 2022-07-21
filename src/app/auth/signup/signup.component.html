@@ -17,6 +17,10 @@
             <input type="password" matInput placeholder="Your password" ngModel name="password" required minlength="6">
         </mat-form-field>
 
+        <mat-form-field hintLabel="Should have at least 4 characters.">
+            <input type="text" matInput placeholder="Your username" ngModel name="username" required minlength="4">
+        </mat-form-field>
+
         <mat-form-field>
             <input matInput placeholder="Your Birthdate" [matDatepicker]="picker"  [max]="maxDate" ngModel name="birthdate" required>
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>

@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/compat/firestore";
+import { Subscription } from "rxjs";
 
 import { Data } from "@angular/router";
 import { combineLatest, of, Subject } from "rxjs";
@@ -14,6 +15,8 @@ import {Record} from "./record.model"
 @Injectable()
 
 export class CompanyProjectService {
+
+    private fbSubs: Subscription[]=[];
 
     companyChanged = new Subject<Company>;
     companiesChanged = new Subject<Company[]>;
@@ -40,7 +43,7 @@ export class CompanyProjectService {
      constructor(private db:AngularFirestore){}
 
     fetchAvailableCompanies() {
-        this.db
+        this.fbSubs.push(this.db
        .collection('company')
         .snapshotChanges()
         .pipe(map(docArray => {
@@ -54,11 +57,11 @@ export class CompanyProjectService {
         .subscribe((companies: Company[]) => {
             this.availableCompanies = companies;
             this.companiesChanged.next([...this.availableCompanies])
-        })
+        }))
     }
 
 fetchAvailableProjects() {
-    this.db
+  this.fbSubs.push(this.db
    .collection('project')
     .snapshotChanges()
     .pipe(map(docArray => {
@@ -72,11 +75,11 @@ fetchAvailableProjects() {
     .subscribe((projects: Project[]) => {
         this.availableProjects = projects;
         this.projectsChanged.next([...this.availableProjects])
-    })
+    }))
 }
 
 fetchAvailableTasks() {
-    this.db
+    this.fbSubs.push (this.db
    .collection('task')
     .snapshotChanges()
     .pipe(map(docArray => { 
@@ -90,7 +93,7 @@ fetchAvailableTasks() {
     .subscribe((projects: Task[]) => {
         this.availableTasks = projects;
         this.tasksChanged.next([...this.availableTasks])
-    })
+    }))
 }
 
 
@@ -120,45 +123,6 @@ selectProjects(selectedId: string) {
     }
 
 
-/// it does not work
-    // innerJoinCollection(firstCollection: string, secondCollection: string){
-
-    //    return (this.db
-    //     .collection<any>(firstCollection)
-    //     .valueChanges()
-    //     .pipe(
-    //       switchMap( projects =>{
-    //         const companyIds = uniq(projects.map(pro => pro.companyId));
-    //         console.log(companyIds)
-    
-    //         return  combineLatest([
-    //           of(projects),
-                 
-    //           combineLatest(
-    //           companyIds.map(companyId =>
-    //            this.db.collection<any>(secondCollection, ref => ref.where('id', '==', companyId))
-    //            .valueChanges().pipe(
-    //              map(companies => companies[0]
-    //                )
-    //            )
-    //            )
-    //        )
-    //         ])
-    //       }),
-    //       map(([projects, companies]) =>{
-    //         return projects.map(project => {
-    //           return {
-    //             ...project,
-    //             company: companies.find( a =>a.id === project.companyId)
-    //           }
-    //         })
-    //       }
-    
-    //       )
-          
-    //     ))
-    // }
-
 //     completeExercise() {
 //         this.addDataToDatabase({...this.runningExercise,
 //              date: new Date(),
@@ -178,37 +142,31 @@ selectProjects(selectedId: string) {
 
 //     }
 
-//     getRunningExercise() {
-//         return { ...this.runningExercise };
-//     }
 
-    // fetchCompletedOrCancelledExercises() {
-    //     this.db.collection('company').valueChanges()
-    //     .subscribe((companies: Company[]) => {
-    //         this.finishedExercisesChanged.next(companies);
-    //     })
+    //  addDataToDatabase (newRecord: Record ) {
+    //     this.db.collection('record').add(newRecord);
     // }
 
-     addDataToDatabase (newRecord: Record ) {
-        this.db.collection('record').add(newRecord);
-    }
+    // fetchAvailableData(collectionName: string) {
+    //     this.db
+    //    .collection(collectionName)
+    //     .snapshotChanges()
+    //     .pipe(map(docArray => {
+    //     return docArray.map(doc => {
+    //         return {
+    //         id: doc.payload.doc.id,
+    //         ...doc.payload.doc.data() as any
+    //         };
+    //     })
+    //     }))
+    //     .subscribe((companies: Company[]) => {
+    //         this.availableData = companies;
+    //         this.companiesChanged.next([...this.availableData])
+    //     })
+    // } 
 
-    fetchAvailableDta(collectionName: string) {
-        this.db
-       .collection(collectionName)
-        .snapshotChanges()
-        .pipe(map(docArray => {
-        return docArray.map(doc => {
-            return {
-            id: doc.payload.doc.id,
-            ...doc.payload.doc.data() as any
-            };
-        })
-        }))
-        .subscribe((companies: Company[]) => {
-            this.availableData = companies;
-            this.companiesChanged.next([...this.availableData])
-        })
+    cancelSubscription(){
+        this.fbSubs.forEach( sub => sub.unsubscribe());
     }
 
  }

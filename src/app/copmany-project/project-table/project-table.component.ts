@@ -23,7 +23,7 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
   companyDataSource = new MatTableDataSource<Company>();
   projectDataSource = new MatTableDataSource<Project>();
   private companiesSubscription: Subscription;
-  private projectsSubscription: Subscription;
+  private dataSubscription: Subscription;
 
   @ViewChild(MatSort,{static: false}) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -48,7 +48,8 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
   constructor(private comProServic: CompanyProjectService, private db:AngularFirestore) { }
 
   ngOnInit() {
-    //------------------------
+
+    
     this.companiesSubscription = this.comProServic.companiesChanged
     .subscribe((companies: Company[]) => {
       this.companies = companies;
@@ -156,7 +157,7 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
     // })
 
     /////////////// record + task + project + company
-    this.db
+   this.dataSubscription = (this.db
     .collection<Record>('record')
     .snapshotChanges()
     .pipe(
@@ -210,7 +211,7 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
       .subscribe(data => {
       this.dataSource.data = data;
       console.log(data);
-    }) 
+    })) 
   }
 ///////////////////////////////end of ngOnInit
 onDeleteRecord(recId: string){
@@ -230,6 +231,7 @@ this.dataSource.filter =filterValue.trim().toLowerCase();
 
 ngOnDestroy() {
   this.companiesSubscription.unsubscribe();
+  this.dataSubscription.unsubscribe();
 }
 }
 
