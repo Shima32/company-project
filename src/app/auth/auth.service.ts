@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AuthData } from "./auth-data.model";
 import { User } from "./user.model";
 import { CompanyProjectService } from '../copmany-project/companyProject.service';
+import { UIService } from '../shared/ui.service';
 
 
 @Injectable()
@@ -18,22 +18,25 @@ export class AuthService {
     constructor (private router: Router,
          private auth: AngularFireAuth,
           private comProService: CompanyProjectService,
-          private snackbar: MatSnackBar
+          private uiService: UIService
           ) {}
 
     
     registerUser(authData: AuthData) {
     this.auth.createUserWithEmailAndPassword(authData.email,authData.password)
     .then ( result => {
-        console.log(result);
+        result.user.updateProfile({
+            displayName: authData.username
+          })
         this.user= {
             email: authData.email,
-            username: authData.username
+            username: authData.username,
+            id: result.user.uid
         };
         this.authSuccessfully();
     })
     .catch (error => {
-         this.snackbar.open(error.message, null, {duration: 3000})
+         this.uiService.showSnackbar(error.message, null, 3000);
      })
     }
 
@@ -41,20 +44,19 @@ export class AuthService {
 
         this.auth.signInWithEmailAndPassword(authData.email, authData.password)
         .then ( result => {
-            console.log(result);
             this.user= {
                 email: authData.email,
-                username: authData.username
+                username: result.user.displayName,
+                id: result.user.uid
             };
             this.authSuccessfully();
         })
         .catch (error => {
-            this.snackbar.open(error.message, null, {duration: 3000})
+            this.uiService.showSnackbar(error.message, null, 3000);
          })
         }
 
         getUser() {
-            console.log(this.user);
             return {...this.user};
         }
 
@@ -74,5 +76,7 @@ export class AuthService {
         this.isAuthenticated = true;
         this.authChange.next(true);
         this.router.navigate(['/copmany']); 
+        this.uiService.showSnackbar(`Hello ${this.user.username}!`, null, 3000);
     }
+    
 }

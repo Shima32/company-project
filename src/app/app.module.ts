@@ -25,6 +25,8 @@ import { AngularFireModule } from "@angular/fire/compat";
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { UIService } from './shared/ui.service';
+import { NotFoundComponent } from './not-found/not-found.component';
+
 
 @NgModule({
   declarations: [
@@ -37,6 +39,7 @@ import { UIService } from './shared/ui.service';
     HeaderComponent,
     SidenavListComponent,
     ProjectFormComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +51,7 @@ import { UIService } from './shared/ui.service';
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    AngularFireAuthModule 
+    AngularFireAuthModule
   ],
   providers: [AuthService,CompanyProjectService,UIService],
   bootstrap: [AppComponent]
