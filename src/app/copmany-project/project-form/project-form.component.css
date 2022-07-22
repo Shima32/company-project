@@ -1,15 +1,36 @@
 .CopProTasCard {
-    padding: 100px;
+    padding-top: 50px;
+    padding-bottom: 100px;
+}
+
+mat-card-title {
+  color: darkblue;
+  font-size: large;
+  font-style:oblique;
+  background-color: beige;
+  margin-bottom: 20px;
 }
 
 mat-form-field {
     margin-left: 8px;
     width: 220px;
+    margin-top: 8px;
+  }
+
+  button{
+ 
+      height:52px;
+      width:225px;
+      font-size:20px;
+      margin-top: 0px;
+      line-height: 20px;
+      
+     
+
   }
   
-  
  form {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   
    form > * {
