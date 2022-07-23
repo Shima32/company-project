@@ -3,6 +3,10 @@ a {
     color: white;
 }
 
+li{
+    color: white;
+}
+
 a:hover,
 a:active {
     color: lightslategray;

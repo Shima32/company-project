@@ -1,17 +1,18 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
-import { MatSort , Sort} from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { combineLatest, Subscription,of, Observable, from } from 'rxjs';
-import { Company } from '../company.model';
-import { Record } from '../record.model';
-import { Task} from '../task.model';
-import { CompanyProjectService } from '../companyProject.service';
-import { Project } from '../project.model';
+import { combineLatest, Subscription,of, Observable } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
-import {uniq} from 'lodash';
+import { uniq } from 'lodash';
+import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort} from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+
+import { Company } from '../company.model';
+import { Project } from '../project.model';
+import { Task } from '../task.model';
+import { Record } from '../record.model';
 import { UIService } from 'src/app/shared/ui.service';
+import { CompanyProjectService } from '../companyProject.service';
 import { MyCustomPaginatorIntl } from './myCustomPaginatorIntl';
 
 
@@ -34,7 +35,6 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
   companyDataSource = new MatTableDataSource<Company>();
   projectDataSource = new MatTableDataSource<Project>();
   isLoading = false;
-  numberOfRecord: number;
   private companiesSubscription: Subscription;
   private dataSubscription: Subscription;
   private loadingSubscription: Subscription
@@ -231,8 +231,6 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
       .subscribe(data => {
       this.uiService.loadingStateChanged.next(false);
       this.dataSource.data = data;
-      this.numberOfRecord= this.dataSource.data.length;
-      console.log('Length:', this.numberOfRecord);
     })) 
   }
 ///////////////////////////////end of ngOnInit

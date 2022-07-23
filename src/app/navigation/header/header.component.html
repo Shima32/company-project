@@ -7,7 +7,7 @@
         <ul fxLayout fxLayoutGap="10px" class="navigation-items">
             <li *ngIf="!isAuth" ><a routerLink="/signup">Signup</a></li>
             <li *ngIf="!isAuth"><a routerLink="/login">Login</a></li>
-            <li *ngIf="isAuth">{{user.email}}</li>
+            <li *ngIf="isAuth" color="white">{{user.email}}</li>
             <!-- <li *ngIf="isAuth"><a style="cursor: pointer" (click)="onLogout()">Logout</a></li> -->
         </ul>
     </div>

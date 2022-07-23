@@ -4,10 +4,10 @@
 }
 
 mat-card-title {
-  color: darkblue;
+  color: #006064;
   font-size: large;
   font-style:oblique;
-  background-color: beige;
+  background-color:#fff9c4;
   margin-bottom: 20px;
 }
 
