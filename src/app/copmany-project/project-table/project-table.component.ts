@@ -79,6 +79,7 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
     //   this.projectDataSource.data = projects;
     //   console.log(projects)
     // })
+
     ///////////////////connect project and company
     // this.db
     // .collection<any>('project')
@@ -111,8 +112,7 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
     //     })
     //   }
 
-    //   )
-      
+    //   )   
     // )
     // .subscribe(data => {
     //   this.dataSource.data = data;
@@ -152,7 +152,6 @@ export class ProjectTableComponent implements OnInit,AfterViewInit,OnDestroy {
     //        )
     //        )
     //    )
-
     //       ]
         
     //    )

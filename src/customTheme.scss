@@ -7,10 +7,3 @@ $customTheme-warn:    mat-palette($mat-deep-orange, 400);
 $customTheme: mat-light-theme($customTheme-primary, $customTheme-accent, $customTheme-warn);
 
 @include angular-material-theme($customTheme);
-
-// .alternate-theme {
-//   $alternate-primary: mat-palette($mat-light-blue);
-//   $alternate-accent:  mat-palette($mat-yellow, 400);
-//   $alternate-theme: mat-light-theme($alternate-primary, $alternate-accent);
-//   @include angular-material-theme($alternate-theme);
-// }

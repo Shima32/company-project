@@ -21,9 +21,6 @@ export class CompanyProjectService {
 
     companyChanged = new Subject<Company>;
     companiesChanged = new Subject<Company[]>;
-    ///////
-  finishedExercisesChanged = new Subject<Company[]>;
-  ////////////////
     private availableCompanies: Company[] = [];
     private selectedCompany: Company ;
 
@@ -123,27 +120,7 @@ selectProjects(selectedId: string) {
         return this.selectedTask;
     }
 
-
-//     completeExercise() {
-//         this.addDataToDatabase({...this.runningExercise,
-//              date: new Date(),
-//              state: 'completed' }); 
-//         this.runningExercise = null;
-//         this.exercisChanged.next(null);
-//     }
-
-//     cancelExercise(progress: number) {
-//         this.addDataToDatabase({...this.runningExercise,
-//             duration: this.runningExercise.duration * (progress / 100),
-//             calories: this.runningExercise.calories * (progress/100) ,
-//             date: new Date(),
-//             state: 'cancelled' }); 
-//         this.runningExercise = null;
-//         this.exercisChanged.next(null);
-
-//     }
-
-
+    // retriving data can apply for all collection but it has some defect.
     //  addDataToDatabase (newRecord: Record ) {
     //     this.db.collection('record').add(newRecord);
     // }
